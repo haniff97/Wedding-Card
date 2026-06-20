@@ -26,16 +26,22 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: var(--font-body);
-  background-color: var(--color-bg);
-  background-image: radial-gradient(#d5c4be 1px, transparent 1px);
-  background-size: 20px 20px;
-  color: var(--color-text);
-  line-height: 1.8;
-  overflow-x: hidden;
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-image: radial-gradient(#d5c4be 1px, transparent 1px);
+  background-size: 20px 20px;
+  line-height: 1.8;
 }
 
 /* The main card container */
@@ -44,7 +50,7 @@ body {
   min-height: 100vh;
   background-color: var(--color-bg);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* Typography Utilities */
@@ -75,7 +81,6 @@ h1, h2, h3 {
 
 /* Layout Utilities */
 .section {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -87,6 +92,13 @@ h1, h2, h3 {
 
 .section:last-child {
   border-bottom: none;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --spacing-xl: 1.5rem;
+    --spacing-lg: 1rem;
+  }
 }
 
 /* Scroll-Driven Animations */

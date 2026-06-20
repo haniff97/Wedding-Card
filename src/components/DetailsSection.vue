@@ -330,7 +330,7 @@ const shareLink = async () => {
 
 @media (max-width: 600px) {
   .elegant-border {
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
   }
   .event-details {
     flex-direction: column;

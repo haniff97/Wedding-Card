@@ -1,107 +1,160 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import WelcomeEnvelope from './components/WelcomeEnvelope.vue'
 import HeroSection from './components/HeroSection.vue'
+import QuoteSection from './components/QuoteSection.vue'
 import CountdownTimer from './components/CountdownTimer.vue'
 import DetailsSection from './components/DetailsSection.vue'
 import RsvpForm from './components/RsvpForm.vue'
+import MusicPlayer from './components/MusicPlayer.vue'
 
-const scrollProgress = ref(0)
-const circumference = 125.66 // 2 * PI * 20
-const strokeDashoffset = computed(() => {
-  return circumference - (scrollProgress.value / 100) * circumference
-})
+const musicPlayerRef = ref(null)
+const activeSection = ref(0)
+const isContentVisible = ref(false)
 
-const updateScroll = () => {
-  const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
-  scrollProgress.value = (winScroll / height) * 100
+const sections = [
+  { id: 'hero', label: 'Hero' },
+  { id: 'quote', label: 'Quote' },
+  { id: 'countdown', label: 'Countdown' },
+  { id: 'details', label: 'Details' },
+  { id: 'rsvp', label: 'RSVP' },
+]
+
+const onEnvelopeOpen = () => {
+  isContentVisible.value = true
+  if (musicPlayerRef.value) {
+    musicPlayerRef.value.startMusic()
+  }
 }
 
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+const scrollToSection = (id) => {
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
+
+let observer = null
 
 onMounted(() => {
-  window.addEventListener('scroll', updateScroll)
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const idx = sections.findIndex((s) => s.id === entry.target.id)
+          if (idx !== -1) activeSection.value = idx
+        }
+      })
+    },
+    { threshold: 0.3 }
+  )
+
+  // Observe after a short delay to allow DOM to render
+  setTimeout(() => {
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id)
+      if (el) observer.observe(el)
+    })
+  }, 2000)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', updateScroll)
+  if (observer) observer.disconnect()
 })
 </script>
 
 <template>
-  <div class="scroll-circle-container" @click="scrollToTop" :class="{ 'is-visible': scrollProgress > 5 }">
-    <svg class="progress-ring" width="46" height="46">
-      <circle class="progress-ring__circle-bg" stroke="rgba(197, 160, 89, 0.2)" stroke-width="2" fill="transparent" r="20" cx="23" cy="23"/>
-      <circle class="progress-ring__circle" stroke="var(--color-gold)" stroke-width="2" fill="transparent" r="20" cx="23" cy="23"
-        :style="{ strokeDasharray: circumference, strokeDashoffset: strokeDashoffset }"/>
-    </svg>
-    <span class="scroll-icon">↑</span>
+  <!-- Dot navigation -->
+  <div class="dot-nav" :class="{ 'is-visible': isContentVisible }">
+    <button
+      v-for="(section, idx) in sections"
+      :key="section.id"
+      class="dot"
+      :class="{ active: activeSection === idx }"
+      @click="scrollToSection(section.id)"
+      :aria-label="'Go to ' + section.label"
+    ></button>
   </div>
+
+  <MusicPlayer ref="musicPlayerRef" />
   
-  <WelcomeEnvelope>
+  <WelcomeEnvelope @opened="onEnvelopeOpen">
     <div class="invitation-wrapper">
       <main class="invitation-card">
-        <HeroSection />
-        <CountdownTimer />
-        <DetailsSection />
-        <RsvpForm />
+        <HeroSection id="hero" />
+        <QuoteSection id="quote" />
+        <CountdownTimer id="countdown" />
+        <DetailsSection id="details" />
+        <RsvpForm id="rsvp" />
       </main>
     </div>
   </WelcomeEnvelope>
 </template>
 
 <style>
-.scroll-circle-container {
+.dot-nav {
   position: fixed;
-  bottom: 30px;
-  right: 20px;
-  width: 46px;
-  height: 46px;
-  z-index: 9999;
-  cursor: pointer;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-  transform: translateY(20px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(253, 251, 247, 0.9);
-  border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.scroll-circle-container.is-visible {
+.dot-nav.is-visible {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
 }
 
-.scroll-circle-container:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(197, 160, 89, 0.2);
-}
-
-.progress-ring {
+/* Connecting line between dots */
+.dot-nav::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(-90deg);
+  top: 5px;
+  bottom: 5px;
+  width: 1px;
+  background-color: rgba(197, 160, 89, 0.35);
+  z-index: -1;
 }
 
-.progress-ring__circle {
-  transition: stroke-dashoffset 0.1s ease;
-  stroke-linecap: round;
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-gold);
+  background: rgba(253, 251, 247, 0.9);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
-.scroll-icon {
-  color: var(--color-gold);
-  font-size: 1.2rem;
-  font-weight: 300;
-  margin-top: -2px;
+.dot:hover {
+  background-color: rgba(197, 160, 89, 0.4);
+  transform: scale(1.3);
+}
+
+.dot.active {
+  background-color: var(--color-gold);
+  transform: scale(1.3);
+  box-shadow: 0 0 6px rgba(197, 160, 89, 0.5);
+}
+
+@media (max-width: 600px) {
+  .dot-nav {
+    right: 28px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
 }
 </style>
 

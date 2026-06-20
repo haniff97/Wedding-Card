@@ -142,6 +142,7 @@
   }
   .elegant-border {
     border-radius: 80px 80px 4px 4px;
+    padding: 2rem 1rem;
   }
 }
 </style>

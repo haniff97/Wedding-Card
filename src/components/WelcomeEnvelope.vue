@@ -21,6 +21,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+const emit = defineEmits(['opened']);
+
 const isOpen = ref(false);
 const isHidden = ref(false);
 const guestName = ref('Tetamu Jemputan');
@@ -37,6 +39,7 @@ onMounted(() => {
 const openEnvelope = () => {
   if (isOpen.value) return;
   isOpen.value = true;
+  emit('opened');
   
   // Hide envelope from DOM completely after animation
   setTimeout(() => {

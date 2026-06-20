@@ -12,7 +12,7 @@
           <span class="line"></span>
         </div>
         
-        <p class="text-center notice serif">Sila sahkan kehadiran anda sebelum<br/><strong>1 Ogos 2026</strong></p>
+        <p class="text-center notice serif">Mohon kesudian anda untuk mengisi maklumat</br>kehadiran dan ucapan buat pasangan pengantin di</br>bawah:</p>
         
         <form @submit.prevent="submitRsvpToWhatsApp" class="rsvp-form">
           <div class="form-group">
@@ -88,6 +88,13 @@ const submitRsvpToWhatsApp = () => {
 <style scoped>
 .rsvp-section {
   background-color: var(--color-bg);
+  padding-bottom: 4rem; /* Extra space at the bottom of the page */
+}
+
+@media (max-width: 600px) {
+  .rsvp-section {
+    padding-bottom: 6rem;
+  }
 }
 
 .elegant-border {
@@ -100,7 +107,7 @@ const submitRsvpToWhatsApp = () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem 1rem;
+  padding: 4rem 1rem 6rem 1rem;
 }
 
 .rsvp-container {
@@ -202,7 +209,7 @@ label {
 
 @media (max-width: 600px) {
   .elegant-border {
-    padding: 3rem 1rem;
+    padding: 2rem 1rem 5rem 1rem;
     border-radius: 4px 4px 80px 80px;
   }
   

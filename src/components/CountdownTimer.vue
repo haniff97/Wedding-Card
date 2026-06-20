@@ -1,6 +1,6 @@
 <template>
-  <div class="countdown-container fade-in-scroll">
-    <div class="elegant-border">
+  <section class="section countdown-section">
+    <div class="elegant-border fade-in-scroll">
       <h3 class="countdown-title uppercase serif text-center">Menghitung Hari</h3>
       <div class="countdown-boxes">
         <div class="time-box">
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -72,22 +72,24 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.countdown-container {
-  width: 100%;
-  padding: 0 1rem;
-  margin: -2rem 0 3rem 0; /* Overlap slightly with hero section */
-  position: relative;
-  z-index: 20;
+.countdown-section {
+  background-color: var(--color-bg);
 }
 
 .elegant-border {
+  width: 100%;
+  height: 100%;
   background-color: var(--color-bg);
   border: 1px solid var(--color-gold);
   border-radius: 4px;
   padding: 2rem 1rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  max-width: 450px;
   margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .countdown-title {
